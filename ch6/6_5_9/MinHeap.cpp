@@ -56,8 +56,18 @@ int MinHeap::erase(Index i)
 
 void MinHeap::insert(int key)
 {
-    ++_heapSize;
-    (*_parr)[_heapSize] = key;
+	// since we use lazy erase here,
+	// so we must assure that the size of the heap
+	// is smaller than the vector *_pvec
+	if ((*_pvec).size() <= _heapsize + 1) {
+		(*_pvec).push_back(key);
+		++_heapsize;
+	}
+	else {
+		++_heapsize;
+		(*_pvec)[_heapsize] = key;
+    }
+        
     decreaseKey(_heapSize, key);
 }
 
