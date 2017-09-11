@@ -12,7 +12,6 @@
 using Array = std::vector<int>;
 using Index = std::vector<int>::size_type;
 
-
 class kHeap
 {
 public:
