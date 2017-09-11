@@ -2,6 +2,9 @@
     "files.associations": {
         "climits": "cpp",
         "map": "cpp",
-        "*.tcc": "cpp"
+        "*.tcc": "cpp",
+        "vector": "cpp",
+        "xstring": "cpp",
+        "xtree": "cpp"
     }
 }
