@@ -1,5 +1,6 @@
 #include "ListGraph.h"
 #include <deque>
+#include <stack>
 
 using namespace std;
 
@@ -8,23 +9,23 @@ static inline void visitVertex(Vertex v)
 	cout << v << ' ';
 }
 
-ListGraph::ListGraph(std::size_t n, std::istream & is) : 
-	_vtx(n), _BFStree(n), _parent(n), _vst(n, false)
-{
-	Edge tempEdge;
-	Vertex v1, v2;
-	while (is >> v1 >> v2) {
-		if (isValidVertex(v1) && isValidVertex(v2)) {
-			auto ret = _vtx[v1].insert(v2);
-		}
-		else {
-			cerr << "Invalid input" << endl;
-			_vtx.clear();
-			_vst.clear();
-			break;
-		}
-	}
-}
+//ListGraph::ListGraph(std::size_t n, std::istream & is) : 
+//	_vtx(n), _BFStree(n), _parent(n), _vst(n, false), _dTime(n, 0), _fTime(n, 0)
+//{
+//	Edge tempEdge;
+//	Vertex v1, v2;
+//	while (is >> v1 >> v2) {
+//		if (isValidVertex(v1) && isValidVerte`x(v2)) {
+//			auto ret = _vtx[v1].insert(v2);
+//		}
+//		else {
+//			cerr << "Invalid input" << endl;
+//			_vtx.clear();
+//			_vst.clear();
+//			break;
+//		}
+//	}
+//}
 
 void ListGraph::doublePath(Vertex v)
 {
@@ -142,6 +143,138 @@ void ListGraph::makePath(Vertex v)
 	}
 }
 
+void ListGraph::DFStravel()
+{
+	int connectedCpt = 1;
+	for (Vertex v = 0; v < _vtx.size(); ++v) {
+		_color[v] = WHITE;
+		_parent[v] = -1;
+	}
+	_time = 0;
+	for (Vertex v = 0; v < _vtx.size(); ++v) {
+		if (_color[v] == WHITE) {
+			_conponent[v] = connectedCpt++;
+			DFSVisit(v, nullptr);
+		}
+	}
+}
+
+void ListGraph::DFSVisit(Vertex v, void(*pfun)(Vertex v) = nullptr)
+{
+	++_time;
+	_dTime[v] = _time;
+	_color[v] = GRAY;
+	for (auto &vertice : _vtx[v]) {
+		if (_color[vertice] == WHITE) {
+			_parent[vertice] = v;
+			_conponent[vertice] = _conponent[v];
+			DFSVisit(vertice);
+		}
+	}
+	// Visit v
+	if (pfun) {
+		pfun(v);
+	}
+	++_time;
+	_fTime[v] = _time;
+	_color[v] = BLACK;
+	visitDFS(v);
+}
+
+void ListGraph::visitDFS(Vertex v)
+{
+	cout << v << ' ' << _dTime[v] << ' ' << _fTime[v] << ' ' << _color[v] << ' ' << endl;
+}
+
+void ListGraph::DFSStack(void(*pfun)(Vertex v))
+{
+	for (Vertex v = 0; v < _vtx.size(); ++v) {
+		_color[v] = WHITE;
+		_parent[v] = -1;
+	}
+
+	_time = 0;
+
+	for (Vertex v = 0; v < _vtx.size(); ++v) {
+		if (_color[v] == WHITE) {
+			stack<int> S;
+			S.push(v);
+			while (!S.empty()) {
+				auto curV = S.top();
+				if (_color[curV] == GRAY) {
+					if (pfun) {
+						pfun(curV);
+					}
+					++_time;
+					_fTime[curV] = _time;
+					_color[curV] = BLACK;
+					visitDFS(curV);
+					S.pop();
+				}
+				else if (_color[curV] == WHITE) {
+					++_time;
+					_dTime[curV] = _time;
+					_color[curV] = GRAY;
+
+					for (auto &vertice : _vtx[curV]) {
+						if (_color[vertice] == WHITE && _parent[vertice] == -1) {
+							_parent[vertice] = curV;
+							S.push(vertice);
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+void ListGraph::DFSEdge()
+{
+	for (Vertex v = 0; v < _vtx.size(); ++v) {
+		_color[v] = WHITE;
+		_parent[v] = -1;
+	}
+
+	_time = 0;
+
+	for (Vertex v = 0; v < _vtx.size(); ++v) {
+		if (_color[v] == WHITE) {
+			printDFEEdge(v);
+		}
+	}
+}
+
+void ListGraph::printDFEEdge(Vertex v)
+{
+	++_time;
+	_dTime[v] = _time;
+	_color[v] = GRAY;
+
+	for (auto &vertice : _vtx[v]) {
+		if (_color[vertice] == WHITE) {
+			_parent[vertice] = v;
+			cout << "(" << v << ", " << vertice << ")" << ' ' << 'T' << endl;
+			printDFEEdge(vertice);
+		}
+		else if (_color[vertice] == GRAY) {
+			cout << "(" << v << ", " << vertice << ")" << ' ' << 'B' << endl;
+		}
+		else if (_color[vertice] == BLACK) {
+			if (_dTime[v] < _dTime[vertice]) {
+				cout << "(" << v << ", " << vertice << ")" << ' ' << 'F' << endl;
+			}
+			else {
+				cout << "(" << v << ", " << vertice << ")" << ' ' << 'C' << endl;
+			}
+		}
+	}
+
+	++_time;
+	_fTime[v] = _time;
+	_color[v] = BLACK;
+
+}
+
 void ListGraph::BFStravel(Vertex v, void(*pfun)(Vertex v))
 {
 	deque<int> vertexQueue;
@@ -170,6 +303,16 @@ void ListGraph::BFStravel(Vertex v, void(*pfun)(Vertex v))
 		if (pfun) {
 			pfun(currV);
 		}
+	}
+	cout << endl;
+}
+
+// Undirected graph only
+void ListGraph::connectedConponent()
+{
+	DFStravel();
+	for (Vertex v = 0; v < _vtx.size(); ++v) {
+		cout << "Vertice: " << v << " in conponent " << _conponent[v] << endl;
 	}
 	cout << endl;
 }

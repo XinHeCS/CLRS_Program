@@ -13,6 +13,9 @@ extern void e22_1_5();
 extern void e22_1_6();
 extern void e22_2_7();
 extern void e22_2_9();
+extern void e22_3_7();
+extern void e22_3_10();
+extern void e22_3_12();
 
 int main()
 {
@@ -22,7 +25,10 @@ int main()
 	//e22_1_5();
 	//e22_1_6();
 	//e22_2_7();
-	e22_2_9();
+	//e22_2_9();
+	/*e22_3_7();*/
+	//e22_3_10();
+	e22_3_12();
 
 	return 0;
 }
