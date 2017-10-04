@@ -30,7 +30,7 @@ public:
 	explicit ListGraph(VertexArray &v) :
 		_vtx(v), _BFStree(_vtx.size()), _parent(_vtx.size()), _vst(_vtx.size(), false), 
 		_dTime(_vtx.size(), 0), _fTime(_vtx.size(), 0), _color(_vtx.size(), WHITE),
-		_conponent(_vtx.size(), 0) {};
+		_conponent(_vtx.size(), 0), _SCC(_vtx.size(), 1) {};
 
 	void display() { doDisplay(); }
 	void display() const { doDisplay(); }
@@ -38,8 +38,7 @@ public:
 	int outDegree(Vertex v) const { return _vtx[v].size(); }
 	bool isAdjacent(Vertex v1, Vertex v2) const 
 	{ 
-		return _vtx[v1].find(v2) != _vtx[v1].end() ||
-			_vtx[v2].find(v1) != _vtx[v2].end(); 
+		return _vtx[v1].find(v2) != _vtx[v1].end();
 	}
 	bool isAdjacentInTree(Vertex v1, Vertex v2) const 
 	{ 
@@ -55,9 +54,11 @@ public:
 	void DFSEdge();
 	void printDFEEdge(Vertex v);
 	void BFStravel(Vertex v, void(*pfun)(Vertex v));	
-	void connectedConponent();
+	int connectedConponent();
 	VertexArray transforn() const;
 	VertexArray getSquareGraph() const;
+	std::vector<Vertex> topologicalSort();
+	VertexArray conponentGraph();	
 
 private: 
 	VertexArray _vtx;
@@ -69,7 +70,9 @@ private:
 	int _time = 0;
 	std::vector<int> _dTime;
 	std::vector<int> _fTime;
-	std::vector<Color> _color;
+	std::vector<Color> _color;	
+	std::vector<Vertex> _sort;
+	std::vector<int> _SCC;
 
 	bool isValidVertex(Vertex v) const
 	{
@@ -79,6 +82,8 @@ private:
 	void makePath(Vertex v);
 	void DFSVisit(Vertex v, void(*pfun)(Vertex v));
 	void visitDFS(Vertex v);
+	void doSort(Vertex v);
+	void findComponentByDFS(Vertex v, std::vector<Vertex> &cpnt, VertexArray &G);
 };
 
 #endif

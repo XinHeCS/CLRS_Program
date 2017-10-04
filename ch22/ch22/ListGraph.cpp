@@ -112,6 +112,47 @@ VertexArray ListGraph::getSquareGraph() const
 	return vArray;
 }
 
+std::vector<Vertex> ListGraph::topologicalSort()
+{
+	if (_vtx.size() > 0) {
+		for (Vertex vertice = 0; vertice < _vtx.size(); ++vertice) {
+			_color[vertice] = WHITE;
+			_dTime[vertice] = -1;
+			_fTime[vertice] = -1;
+		}
+		_time = 0;
+		_sort.clear();
+
+		for (Vertex v = 0; v < _vtx.size(); ++v) {
+			if (_color[v] == WHITE) {
+				doSort(v);
+			}
+		}
+
+		return _sort;
+	}
+	else {
+		return vector<Vertex>();
+	}
+}
+
+void ListGraph::doSort(Vertex v)
+{
+	++_time;
+	_dTime[v] = _time;
+	_color[v] = GRAY;
+	for (auto &vertice : _vtx[v]) {
+		if (_color[vertice] == WHITE) {
+			doSort(vertice);
+		}
+	}
+
+	++_time;
+	_fTime[v] = _time;
+	_color[v] = BLACK;
+	_sort.insert(_sort.begin(), v);
+}
+
 void ListGraph::doDisplay() const
 {
 	cout << "Graph:" << endl;
@@ -272,7 +313,6 @@ void ListGraph::printDFEEdge(Vertex v)
 	++_time;
 	_fTime[v] = _time;
 	_color[v] = BLACK;
-
 }
 
 void ListGraph::BFStravel(Vertex v, void(*pfun)(Vertex v))
@@ -308,11 +348,82 @@ void ListGraph::BFStravel(Vertex v, void(*pfun)(Vertex v))
 }
 
 // Undirected graph only
-void ListGraph::connectedConponent()
+int ListGraph::connectedConponent()
 {
-	DFStravel();
-	for (Vertex v = 0; v < _vtx.size(); ++v) {
-		cout << "Vertice: " << v << " in conponent " << _conponent[v] << endl;
+	//DFStravel();
+	//for (Vertex v = 0; v < _vtx.size(); ++v) {
+	//	cout << "Vertice: " << v << " in conponent " << _conponent[v] << endl;
+	//}
+	//cout << endl;
+	topologicalSort();
+	VertexArray G_T = this->transforn();
+
+	//DFS for G_T
+	vector<Vertex> cpnt;
+	for (Vertex v = 0; v < _vst.size(); ++v) {
+		_vst[v] = false;
 	}
-	cout << endl;
+
+	int cpntCount = 0;
+	for (Vertex v = 0; v < _sort.size(); ++v) {
+		if (!_vst[_sort[v]]) {
+			_SCC[_sort[v]] = cpntCount++;
+			cpnt.clear();
+			findComponentByDFS(_sort[v], cpnt, G_T);
+			cout << "Conponent: " << _SCC[_sort[v]] << endl;
+			for (auto &item : cpnt) {
+				cout << item << ' ';
+			}
+			cout << endl;
+		}
+	}
+
+	return cpntCount;
+}
+
+void ListGraph::findComponentByDFS(Vertex v, vector<Vertex> &cpnt, VertexArray &G)
+{
+	cpnt.push_back(v);
+	_vst[v] = true;
+
+	for (auto &vertice : G[v]) {
+		if (!_vst[vertice]) {
+			_SCC[vertice] = _SCC[v];
+			findComponentByDFS(vertice, cpnt, G);
+		}
+	}
+}
+
+VertexArray	 ListGraph::conponentGraph()
+{
+	auto cpntNumber = connectedConponent();
+	VertexArray cpntGraph(cpntNumber);
+	vector<bool> visited(_vtx.size(), false);
+	vector<vector<bool>> hasEdge(cpntNumber, vector<bool>(cpntNumber, false));
+
+	for (Vertex v = 0; v < _vtx.size(); ++v) {
+		if (!visited[v]) {
+			stack<Vertex> S;
+			visited[v] = true;
+			S.push(v);
+
+			while (!S.empty()) {
+				auto curV = S.top();
+				S.pop();
+				for (auto &vertice : _vtx[curV]) {
+					if (_SCC[curV] != _SCC[vertice] &&
+						!hasEdge[_SCC[vertice]][_SCC[curV]]) {
+						cpntGraph[_SCC[curV]].insert(_SCC[vertice]);
+						hasEdge[_SCC[vertice]][_SCC[curV]] = true;
+					}
+					if (!visited[vertice]) {
+						visited[vertice] = true;
+						S.push(vertice);
+					}
+				}
+			}
+		}
+	}
+
+	return cpntGraph;
 }

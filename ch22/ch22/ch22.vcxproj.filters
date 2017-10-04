@@ -53,5 +53,29 @@
     <ClCompile Include="22_3_12.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="22_4_3.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="22_4_5.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="22_4_2.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="22_5_4.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="22_5_7.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="p22_3.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="p22_2.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="p22_4.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

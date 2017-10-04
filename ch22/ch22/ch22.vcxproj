@@ -123,7 +123,15 @@
     <ClCompile Include="22_3_10.cpp" />
     <ClCompile Include="22_3_12.cpp" />
     <ClCompile Include="22_3_7.cpp" />
+    <ClCompile Include="22_4_3.cpp" />
+    <ClCompile Include="22_4_5.cpp" />
+    <ClCompile Include="22_4_2.cpp" />
+    <ClCompile Include="22_5_4.cpp" />
+    <ClCompile Include="22_5_7.cpp" />
     <ClCompile Include="ListGraph.cpp" />
+    <ClCompile Include="p22_2.cpp" />
+    <ClCompile Include="p22_3.cpp" />
+    <ClCompile Include="p22_4.cpp" />
     <ClCompile Include="testExercises.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
